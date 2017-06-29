@@ -3,16 +3,13 @@ import * as compression from "compression";
 import * as express from "express";
 import * as path from "path";
 
+import * as dotenv from "dotenv";
 import { mongoDbConnection } from "./middleware/mongoDb.middleware";
-import { mongooseInitialize } from "./middleware/mongoose.middleware";
-import { dataDefRouter } from "./routes/dataDefinition";
+import { schemaRouter } from "./routes/schema";
 import { persistenceRouter } from "./routes/persistence";
 
-// import { feedRouter } from "./routes/feed";
-// import { loginRouter } from "./routes/login";
-// import { protectedRouter } from "./routes/protected";
-// import { publicRouter } from "./routes/public";
-// import { userRouter } from "./routes/user";
+dotenv.config();
+
 const app: express.Application = express();
 
 app.disable("x-powered-by");
@@ -23,8 +20,7 @@ app.use(urlencoded({ extended: true }));
 
 // api routes
 app.use(mongoDbConnection);
-app.use(mongooseInitialize);
-app.use("/api/data-def", dataDefRouter);
+app.use("/api/schema", schemaRouter);
 app.use("/api/persistence", persistenceRouter);
 // app.use("/api/secure", protectedRouter);
 // app.use("/api/login", loginRouter);

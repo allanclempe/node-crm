@@ -37,6 +37,6 @@ export const PersonSchema = new Schema({
     // }
 });
 
-const Person = model<IPersonModel>("Person", PersonSchema, "persons");
+const Person = model<IPersonModel>("Person", PersonSchema);
 
 export default Person;
