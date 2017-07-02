@@ -1,4 +1,5 @@
 import { Document, model, Schema } from "mongoose";
+import { getModel } from "./infrastructure/mongoose.helper";
 import { IProject, ProjectSchema } from "./project";
 
 export interface IUser {
@@ -32,6 +33,6 @@ export const UserSchema = new Schema({
     projects: [ProjectSchema],
 });
 
-const User = model<IUserModel>("User", UserSchema);
+const User = getModel<IUserModel>("User", UserSchema);
 
 export default User;

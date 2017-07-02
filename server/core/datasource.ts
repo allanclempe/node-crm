@@ -1,4 +1,5 @@
 import { Document, model, Schema, SchemaTypes, Types } from "mongoose";
+import { getModel } from "./infrastructure/mongoose.helper";
 import { IKeyValue } from "./keyvalue";
 
 export interface IDataSource {
@@ -28,6 +29,6 @@ export const DataSourceSchema = new Schema({
     fields: SchemaTypes.Mixed,
 });
 
-const DataSource = model<IDataSourceModel>("DataSource", DataSourceSchema);
+const DataSource = getModel<IDataSourceModel>("DataSource", DataSourceSchema);
 
 export default DataSource;

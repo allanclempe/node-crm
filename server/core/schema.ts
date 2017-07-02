@@ -1,4 +1,5 @@
 import * as mongoose from "mongoose";
+import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface ISchema {
     environmentId: string;
@@ -33,6 +34,6 @@ SchemaSchema.method("validateDefinition", (definition: any) => {
     }
 });
 
-const Schema = mongoose.model<ISchemaModel>("Schema", SchemaSchema);
+const Schema = getModel<ISchemaModel>("Schema", SchemaSchema);
 
 export default Schema;

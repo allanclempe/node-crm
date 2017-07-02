@@ -1,4 +1,5 @@
 import { Document, model, Schema } from "mongoose";
+import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface IEnvironment {
     name: string; /* production, staging, development */
@@ -24,6 +25,6 @@ export const EnvironmentSchema = new Schema({
     }
 });
 
-const Environment = model<IEnvironmentModel>("Environment", EnvironmentSchema);
+const Environment = getModel<IEnvironmentModel>("Environment", EnvironmentSchema);
 
 export default Environment;

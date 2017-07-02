@@ -1,5 +1,6 @@
 import { Document, model, Schema } from "mongoose";
 import { EnvironmentSchema, IEnvironment } from "./environment";
+import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface IProject {
     name: string;
@@ -17,6 +18,6 @@ export const ProjectSchema = new Schema({
     environments: [EnvironmentSchema],
 });
 
-const Project = model<IProjectModel>("Project", ProjectSchema);
+const Project = getModel<IProjectModel>("Project", ProjectSchema);
 
 export default Project;

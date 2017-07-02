@@ -1,5 +1,6 @@
 import { Document, model, Schema, SchemaTypes, Types } from "mongoose";
 import { FormFieldSchema, IFormField } from "./formfield";
+import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface IForm {
     environmentId: string;
@@ -27,6 +28,6 @@ export const FormSchema = new Schema({
     fields:[FormFieldSchema],
 });
 
-const Form = model<IFormModel>("Form", FormSchema);
+const Form = getModel<IFormModel>("Form", FormSchema);
 
 export default Form;
