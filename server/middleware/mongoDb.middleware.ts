@@ -1,16 +1,52 @@
 import { NextFunction, Request, Response, Router } from "express";
+import { verify } from "jsonwebtoken";
 import * as mongoose from "mongoose";
 import { parameters } from "../environment/environment";
 
-export const mongoDbConnection = (dbName: String) => {
+export const mongoDbConnection = (dbName: string, useEnvironment: boolean) => {
+
+    (<any>mongoose).Promise = global.Promise;
+
     return (request: Request, response: Response, next: NextFunction) => {
+
+        if (request.method === "OPTIONS") {
+            return next();
+        }
+
+        const openConnection = (host: string, name: string, debug: boolean) => {
+            mongoose.connect(`mongodb://${host}/${name}`);
+            mongoose.set("debug", debug);
+            response.on("finish", () => {
+                mongoose.connection.close();
+            });
+            next();
+        };
+
         const cfg = parameters();
-        (<any>mongoose).Promise = global.Promise;
-        mongoose.connect(`mongodb://${cfg.mongoDb.host}/${dbName}`);
-        mongoose.set("debug", cfg.mongoDb.debug);
-        response.on("finish", () => {
-            mongoose.connection.close();
-        });
-        next();
+        let token = request.headers.authorization;
+        let name = dbName;
+
+        if (!!token && token.startsWith("Bearer ")) {
+            token = token.replace("Bearer ", "");
+        }
+
+        if (useEnvironment) {
+            verify(token, cfg.identity.secret, (tokenError, decodedToken) => {
+                if (!!tokenError) {
+                    response.status(403).json({
+                        message: "Unauthorized, Invalid token",
+                    });
+                    return;
+                }
+
+                openConnection(cfg.mongoDb.host,
+                            `${name}-${decodedToken.projectId}-${decodedToken.env}`,
+                            cfg.mongoDb.debug);
+            });
+            return;
+        }
+
+        openConnection(cfg.mongoDb.host, name, cfg.mongoDb.debug);
+
     };
 };

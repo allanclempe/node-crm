@@ -12,10 +12,7 @@ import { schemaRouter } from "./routes/schema";
 dotenv.config();
 
 const app: express.Application = express();
-const dbNames = {
-  identity: "db-system",
-  system: "db-system",
-};
+const dbCollectionName = "dbsystem";
 
 app.disable("x-powered-by");
 
@@ -24,9 +21,9 @@ app.use(compression());
 app.use(urlencoded({ extended: true }));
 
 // api routes
-app.use("/api/schema", mongoDbConnection(dbNames.system), schemaRouter);
-app.use("/api/persistence", mongoDbConnection(dbNames.system), persistenceRouter);
-app.use("/api/identity", mongoDbConnection(dbNames.identity), identityRouter);
+app.use("/api/schema", mongoDbConnection(dbCollectionName, true), schemaRouter);
+app.use("/api/persistence", mongoDbConnection(dbCollectionName, true), persistenceRouter);
+app.use("/api/identity", mongoDbConnection(dbCollectionName, false), identityRouter);
 // app.use("/api/secure", protectedRouter);
 // app.use("/api/login", loginRouter);
 // app.use("/api/public", publicRouter);
