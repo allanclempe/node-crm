@@ -30,6 +30,6 @@ export const FormFieldSchema = new Schema({
     dataSource: DataSourceSchema,
 });
 
-const FormField = getModel<IFormFieldModel>("FormField", FormFieldSchema);
+const FormField = getModel<IFormFieldModel>("sys_formfield", FormFieldSchema);
 
 export default FormField;

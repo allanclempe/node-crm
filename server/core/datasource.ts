@@ -15,7 +15,7 @@ export interface IDataSourceModel extends Document, IDataSource {
 export const DataSourceSchema = new Schema({
     name: {
         required: true,
-        type: String
+        type: String,
     },
     environmentId: {
         required: true,
@@ -29,6 +29,6 @@ export const DataSourceSchema = new Schema({
     fields: SchemaTypes.Mixed,
 });
 
-const DataSource = getModel<IDataSourceModel>("DataSource", DataSourceSchema);
+const DataSource = getModel<IDataSourceModel>("sys_datasource", DataSourceSchema);
 
 export default DataSource;

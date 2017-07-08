@@ -1,13 +1,11 @@
 import { Document, model, Schema } from "mongoose";
 import { getModel } from "./infrastructure/mongoose.helper";
-import { IProject, ProjectSchema } from "./project";
 
 export interface IUser {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
-    projects: IProject[];
 }
 
 export interface IUserModel extends IUser, Document {
@@ -16,23 +14,22 @@ export interface IUserModel extends IUser, Document {
 export const UserSchema = new Schema({
     firstName: {
         required: true,
-        type: String
+        type: String,
     },
     lastName: {
         required: true,
-        type: String
+        type: String,
     },
     email: {
         required: true,
-        type: String
+        type: String,
     },
     password: {
         required: true,
-        type: String
-    },
-    projects: [ProjectSchema],
+        type: String,
+    }
 });
 
-const User = getModel<IUserModel>("User", UserSchema);
+const User = getModel<IUserModel>("sys_users", UserSchema);
 
 export default User;

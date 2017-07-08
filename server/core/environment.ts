@@ -3,8 +3,9 @@ import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface IEnvironment {
     name: string; /* production, staging, development */
-    api: string;
+    key: string;
     secret: string;
+    projectId: string;
 }
 
 export interface IEnvironmentModel extends IEnvironment, Document {
@@ -13,18 +14,23 @@ export interface IEnvironmentModel extends IEnvironment, Document {
 export const EnvironmentSchema = new Schema({
     name: {
         required: true,
-        type: String
+        type: String,
     },
-    api: {
+    key: {
         required: true,
-        type: String
+        type: String,
     },
     secret: {
         required: true,
-        type: String
-    }
+        type: String,
+    },
+    projectId: {
+        required: true,
+        type: Schema.Types.ObjectId,
+        ref: "sys_projects",
+    },
 });
 
-const Environment = getModel<IEnvironmentModel>("Environment", EnvironmentSchema);
+const Environment = getModel<IEnvironmentModel>("sys_environments", EnvironmentSchema);
 
 export default Environment;

@@ -7,3 +7,7 @@ export function getModel<T extends mongoose.Document>(name: string, schema: mong
 
     return mongoose.model<T>(name, schema);
 }
+
+export function cleanupModel(name: string) {
+    delete (<any> mongoose).connection.models[name];
+}

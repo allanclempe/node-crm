@@ -4,7 +4,7 @@ import { getModel } from "./infrastructure/mongoose.helper";
 
 export interface IProject {
     name: string;
-    environments: IEnvironment[];
+    userId: string;
 }
 
 export interface IProjectModel extends IProject, Document {
@@ -13,11 +13,15 @@ export interface IProjectModel extends IProject, Document {
 export const ProjectSchema = new Schema({
     name: {
         required: true,
-        type: String
+        type: String,
     },
-    environments: [EnvironmentSchema],
+    userId: {
+        required: true,
+        type: Schema.Types.ObjectId,
+        ref: "sys_users",
+    },
 });
 
-const Project = getModel<IProjectModel>("Project", ProjectSchema);
+const Project = getModel<IProjectModel>("sys_projects", ProjectSchema);
 
 export default Project;

@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import * as mongoose from "mongoose";
+import { cleanupModel } from "../core/infrastructure/mongoose.helper";
 import Schema, { ISchemaModel } from "../core/schema";
 
 const persistenceRouter: Router = Router();
@@ -9,10 +10,10 @@ persistenceRouter.post("/:entity", (request: Request, response: Response) => {
     const entityName = request.params.entity;
     const data = request.body;
 
-    Schema.findOne({ name : entityName }, (err: any, schema: ISchemaModel) => {
+    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaModel) => {
 
         if (schema == null) {
-            return response.status(400).json({message : `Definition for '${entityName}' not found`});
+            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
         }
 
         const mongooseSchema = new mongoose.Schema(schema.definition);
@@ -21,12 +22,41 @@ persistenceRouter.post("/:entity", (request: Request, response: Response) => {
 
         entity.save((error, result) => {
 
+            cleanupModel(entityName);
+
             if (!!error) {
                 response.status(400).json(error);
                 return;
             }
 
-            delete (<any> mongoose).connection.models[entityName];
+            response.status(200).json(result);
+        });
+
+    });
+
+});
+
+persistenceRouter.get("/:entity", (request: Request, response: Response) => {
+
+    const entityName = request.params.entity;
+
+    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaModel) => {
+
+        if (schema == null) {
+            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+        }
+
+        const mongooseSchema = new mongoose.Schema(schema.definition);
+        const entityModel = mongoose.model(entityName, mongooseSchema);
+        entityModel.find((error, result) => {
+
+            cleanupModel(entityName);
+
+            if (!!error) {
+                response.status(400).json(error);
+                return;
+            }
+
             response.status(200).json(result);
         });
 

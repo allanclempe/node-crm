@@ -16,15 +16,14 @@ schemaRouter.post("/:entity", (request: Request, response: Response) => {
             ? new Schema(queryResult[0])
             : new Schema({ name: entityName, environmentId });
 
-        const definition = request.body.definition;
-        const schemaValidator = schema.validateDefinition(definition);
+        const schemaValidator = schema.validateDefinition(schemaDefinition);
 
         if (!schemaValidator.valid) {
             response.status(400).json({ message: schemaValidator.error });
             return;
         }
 
-        schema.definition = definition;
+        schema.definition = schemaDefinition;
         schema.save((error, saveResult) => {
             if (!!error) {
                 response.status(400).json(error);

@@ -5,12 +5,17 @@ import * as path from "path";
 
 import * as dotenv from "dotenv";
 import { mongoDbConnection } from "./middleware/mongoDb.middleware";
-import { schemaRouter } from "./routes/schema";
+import { identityRouter } from "./routes/identity";
 import { persistenceRouter } from "./routes/persistence";
+import { schemaRouter } from "./routes/schema";
 
 dotenv.config();
 
 const app: express.Application = express();
+const dbNames = {
+  identity: "db-system",
+  system: "db-system",
+};
 
 app.disable("x-powered-by");
 
@@ -19,9 +24,9 @@ app.use(compression());
 app.use(urlencoded({ extended: true }));
 
 // api routes
-app.use(mongoDbConnection);
-app.use("/api/schema", schemaRouter);
-app.use("/api/persistence", persistenceRouter);
+app.use("/api/schema", mongoDbConnection(dbNames.system), schemaRouter);
+app.use("/api/persistence", mongoDbConnection(dbNames.system), persistenceRouter);
+app.use("/api/identity", mongoDbConnection(dbNames.identity), identityRouter);
 // app.use("/api/secure", protectedRouter);
 // app.use("/api/login", loginRouter);
 // app.use("/api/public", publicRouter);

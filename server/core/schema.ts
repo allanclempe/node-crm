@@ -34,6 +34,6 @@ SchemaSchema.method("validateDefinition", (definition: any) => {
     }
 });
 
-const Schema = getModel<ISchemaModel>("Schema", SchemaSchema);
+const Schema = getModel<ISchemaModel>("sys_schema", SchemaSchema);
 
 export default Schema;

@@ -23,11 +23,11 @@ export const FormSchema = new Schema({
     },
     name: {
         required: true,
-        type: String
+        type: String,
     },
-    fields:[FormFieldSchema],
+    fields: [FormFieldSchema],
 });
 
-const Form = getModel<IFormModel>("Form", FormSchema);
+const Form = getModel<IFormModel>("sys_form", FormSchema);
 
 export default Form;
