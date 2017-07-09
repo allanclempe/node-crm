@@ -4,7 +4,6 @@ import { ModalComponent, ModalDirectivesDirective } from './modal/modal.componen
 import { CommonModule } from '@angular/common';
 import { TopNavigationComponent } from './top-navigation/top-navigation.component';
 import { RouterModule } from '@angular/router';
-import { SubNavigationComponent } from './sub-navigation/sub-navigation.component';
 import { NotesComponent } from './notes/notes.component';
 import { ButtonComponent } from './button/button.component';
 import { InputComponent } from './input/input.component';
@@ -16,7 +15,6 @@ import { LoaderComponent } from './loader/loader.component';
   declarations: [
     ModalComponent,
     TopNavigationComponent,
-    SubNavigationComponent,
     ModalDirectivesDirective,
     CardComponent,
     ButtonComponent,
@@ -28,7 +26,7 @@ import { LoaderComponent } from './loader/loader.component';
     CommonModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   exports: [
     ModalComponent,
@@ -38,7 +36,6 @@ import { LoaderComponent } from './loader/loader.component';
     CardComponent,
     ButtonComponent,
     InputComponent,
-    SubNavigationComponent,
     NotesComponent
   ]
 })

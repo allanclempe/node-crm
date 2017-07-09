@@ -56,10 +56,11 @@ identityRouter.post("/user/login", (request: Request, response: Response) => {
         const passwordHash = CryptoHelper.calculateHash(password, cfg.identity.secret);
 
         if (!user || user.password !== passwordHash) {
-            return response.status(403).json({ error: "Unathorized" });
+            return response.status(401).json({ error: "Unathorized" });
         }
 
         const payload = {
+            id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -99,16 +100,17 @@ identityRouter.post("/user/crm/login", (request: Request, response: Response) =>
             const passwordHash = CryptoHelper.calculateHash(password, cfg.identity.secret);
 
             if (!user || user.password !== passwordHash) {
-                return response.status(403).json({ error: "Unathorized" });
+                return response.status(401).json({ error: "Unathorized" });
             }
 
             if (user.permissions.environmentIds.filter((id) => id.toString() === env.id).length === 0) {
-                return response.status(403).json({
+                return response.status(401).json({
                     error: `User do not have permissions for '${env.name}' environment`,
                 });
             }
 
             const payload = {
+                id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
@@ -218,7 +220,7 @@ identityRouter.post("/environment/login", (request: Request, response: Response)
     Environment.findOne({ key }).then((env: IEnvironment) => {
 
         if (env == null) {
-            return response.status(403).json({ error: "Unauthorized" });
+            return response.status(401).json({ error: "Unauthorized" });
         }
         const payload = { env: env.name, projectId: env.projectId };
         const token = sign(payload, cfg.identity.secret, {

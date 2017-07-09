@@ -4,6 +4,7 @@ import * as express from "express";
 import * as path from "path";
 
 import * as dotenv from "dotenv";
+import { cors } from "./middleware/cors.middleware";
 import { mongoDbConnection } from "./middleware/mongoDb.middleware";
 import { identityRouter } from "./routes/identity";
 import { persistenceRouter } from "./routes/persistence";
@@ -16,6 +17,7 @@ const dbCollectionName = "dbsystem";
 
 app.disable("x-powered-by");
 
+app.use(cors());
 app.use(json());
 app.use(compression());
 app.use(urlencoded({ extended: true }));

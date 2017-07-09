@@ -2,23 +2,25 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { DashboardComponent } from './dashboard.component';
-import { routing } from './dashboard.router';
 import { SharedModule } from '../shared/shared.module';
+import { LoginComponent } from './login/login.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { routing } from './identity.router';
 
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
     SharedModule,
-    routing
+    routing,
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [
-    DashboardComponent
+    LoginComponent,
+    DashboardComponent,
   ],
   bootstrap: [
-    DashboardComponent
+    LoginComponent
   ]
 })
-export class DashboardModule {}
+export class IdentityModule {}

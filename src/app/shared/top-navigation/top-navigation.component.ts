@@ -10,7 +10,8 @@ export class TopNavigationComponent implements OnInit {
 
   @ViewChild('topnav') topnav: ElementRef;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {}
 
