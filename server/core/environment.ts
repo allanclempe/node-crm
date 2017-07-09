@@ -6,6 +6,7 @@ export interface IEnvironment {
     key: string;
     secret: string;
     projectId: string;
+    tokenExpiresIn: string;
 }
 
 export interface IEnvironmentModel extends IEnvironment, Document {
@@ -29,6 +30,10 @@ export const EnvironmentSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "sys_projects",
     },
+    tokenExpiresIn: {
+        required: true,
+        type: String,
+    }
 });
 
 const Environment = getModel<IEnvironmentModel>("sys_environments", EnvironmentSchema);

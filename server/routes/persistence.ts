@@ -25,13 +25,38 @@ persistenceRouter.post("/:entity", (request: Request, response: Response) => {
             cleanupModel(entityName);
 
             if (!!error) {
-                response.status(400).json(error);
-                return;
+                return response.status(400).json(error);
             }
 
-            response.status(200).json(result);
+            return response.status(200).json(result);
         });
 
+    });
+
+});
+
+persistenceRouter.put("/:entity/:id", (request: Request, response: Response) => {
+
+    const entityName = request.params.entity;
+    const id = request.params.id;
+    const data = request.body;
+
+    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaModel) => {
+
+        if (schema == null) {
+            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+        }
+
+        const mongooseSchema = new mongoose.Schema(schema.definition);
+        const entityModel = mongoose.model(entityName, mongooseSchema);
+
+        entityModel.findByIdAndUpdate(id, data, { new: true }, (error, result) => {
+            cleanupModel(entityName);
+            if (!!error) {
+                return response.status(400).json(error);
+            }
+            return response.status(200).json(result);
+        });
     });
 
 });

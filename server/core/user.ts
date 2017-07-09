@@ -6,6 +6,11 @@ export interface IUser {
     lastName: string;
     email: string;
     password: string;
+    permissions: IUserPermissions;
+}
+
+export interface IUserPermissions {
+    environmentIds: string[];
 }
 
 export interface IUserModel extends IUser, Document {
@@ -27,7 +32,11 @@ export const UserSchema = new Schema({
     password: {
         required: true,
         type: String,
-    }
+    },
+    permissions: {
+        environmentIds: [Schema.Types.ObjectId],
+        god: Boolean,
+    },
 });
 
 const User = getModel<IUserModel>("sys_users", UserSchema);
