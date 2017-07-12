@@ -1,3 +1,6 @@
+import { verify } from "jsonwebtoken";
+import { parameters } from "../environment/environment";
+
 const cors = () => {
     return (req, res, next) => {
         res.header("Access-Control-Allow-Origin", "*");

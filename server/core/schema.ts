@@ -1,39 +1,31 @@
-import * as mongoose from "mongoose";
-import { getModel } from "./infrastructure/mongoose.helper";
+import { model, Model, Document, Schema as mSchema } from "mongoose";
+import { SchemaSchema } from "./schema/schema.schema";
+
+export interface ISchemaDocument extends ISchema, Document {
+}
+
+export interface ISchemaModel extends Model<ISchemaDocument> {
+}
 
 export interface ISchema {
-    environmentId: string;
     name: string;
     definition: any;
     validateDefinition(definition: any);
 }
 
-export interface ISchemaModel extends mongoose.Document, ISchema {
+export class SchemaClass implements ISchema {
+    public name: string;
+    public definition: any;
+    validateDefinition(definition: any) {
+        try {
+            const schema = new mSchema(definition);
+            return { error: null, valid: true };
+        } catch (ex) {
+            return { error: ex.message, valid: false };
+        }
+    }
 }
 
-const schemOptions = {strict: false};
+SchemaSchema.loadClass(SchemaClass);
 
-export const SchemaSchema = new mongoose.Schema({
-    environmentId: {
-        required: true,
-        type: String,
-    },
-    name: {
-        required: true,
-        type: String
-    },
-    definition: mongoose.SchemaTypes.Mixed,
-}, schemOptions);
-
-SchemaSchema.method("validateDefinition", (definition: any) => {
-    try {
-        let schema = new mongoose.Schema(definition);
-        return { error: null, valid: true };
-    } catch (ex) {
-        return { error: ex.message, valid: false };
-    }
-});
-
-const Schema = getModel<ISchemaModel>("sys_schema", SchemaSchema);
-
-export default Schema;
+export const Schema = <ISchemaModel>model("Schema", SchemaSchema, "sys_schemas");

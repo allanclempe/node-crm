@@ -1,5 +1,12 @@
-import { Document, model, Schema } from "mongoose";
-import { getModel } from "./infrastructure/mongoose.helper";
+import { Document, Model, model, Schema } from "mongoose";
+import { UserSchema } from "./schema/user.schema";
+
+export interface IUserDocument extends IUser, Document {
+}
+
+export interface IUserModel extends Model<IUserDocument> {
+    // static properties goes here;
+}
 
 export interface IUser {
     firstName: string;
@@ -13,32 +20,14 @@ export interface IUserPermissions {
     environmentIds: string[];
 }
 
-export interface IUserModel extends IUser, Document {
+export class UserClass implements IUser {
+    public firstName: string;
+    public lastName: string;
+    public email: string;
+    public password: string;
+    public permissions: IUserPermissions;
 }
 
-export const UserSchema = new Schema({
-    firstName: {
-        required: true,
-        type: String,
-    },
-    lastName: {
-        required: true,
-        type: String,
-    },
-    email: {
-        required: true,
-        type: String,
-    },
-    password: {
-        required: true,
-        type: String,
-    },
-    permissions: {
-        environmentIds: [Schema.Types.ObjectId],
-        god: Boolean,
-    },
-});
+UserSchema.loadClass(UserClass);
 
-const User = getModel<IUserModel>("sys_users", UserSchema);
-
-export default User;
+export const User = <IUserModel>model("User", UserSchema, "sys_users");

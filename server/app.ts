@@ -6,9 +6,8 @@ import * as path from "path";
 import * as dotenv from "dotenv";
 import { cors } from "./middleware/cors.middleware";
 import { mongoDbConnection } from "./middleware/mongoDb.middleware";
-import { identityRouter } from "./routes/identity";
-import { persistenceRouter } from "./routes/persistence";
-import { schemaRouter } from "./routes/schema";
+import { apiRouter } from "./routes/router";
+
 
 dotenv.config();
 
@@ -23,14 +22,7 @@ app.use(compression());
 app.use(urlencoded({ extended: true }));
 
 // api routes
-app.use("/api/schema", mongoDbConnection(dbCollectionName, true), schemaRouter);
-app.use("/api/persistence", mongoDbConnection(dbCollectionName, true), persistenceRouter);
-app.use("/api/identity", mongoDbConnection(dbCollectionName, false), identityRouter);
-// app.use("/api/secure", protectedRouter);
-// app.use("/api/login", loginRouter);
-// app.use("/api/public", publicRouter);
-// app.use("/api/feed", feedRouter);
-// app.use("/api/user", userRouter);
+app.use("/api", apiRouter());
 
 if (app.get("env") === "production") {
 

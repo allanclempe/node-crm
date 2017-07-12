@@ -1,33 +1,16 @@
-import { Document, model, Schema, SchemaTypes, Types } from "mongoose";
-import { FormFieldSchema, IFormField } from "./formfield";
-import { getModel } from "./infrastructure/mongoose.helper";
+import { Document, Model, model, Schema, SchemaTypes, Types } from "mongoose";
+import { FormFieldSchema, FormSchema } from "./schema/index";
+import { IFormField } from "./formfield";
 
-export interface IForm {
+export interface IFormDocument extends Document, IForm {}
+export interface IFormModel extends Model<IFormDocument> {}
+
+export interface IForm extends Document {
     environmentId: string;
     schemaId: string;
     name: string;
     fields: IFormField[];
 }
 
-export interface IFormModel extends Document, IForm {
-}
 
-export const FormSchema = new Schema({
-    environmentId: {
-        required: true,
-        type: Types.ObjectId,
-    },
-    schemaId: {
-        required: true,
-        type: Types.ObjectId,
-    },
-    name: {
-        required: true,
-        type: String,
-    },
-    fields: [FormFieldSchema],
-});
-
-const Form = getModel<IFormModel>("sys_form", FormSchema);
-
-export default Form;
+export const Form = <IFormModel> model("Form", FormSchema, "sys_form");

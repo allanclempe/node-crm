@@ -1,18 +1,15 @@
 import { Request, Response, Router } from "express";
-import * as mongoose from "mongoose";
-import Schema, { ISchemaModel } from "../core/Schema";
+import { Schema, ISchema } from "../../core";
 
-const schemaRouter: Router = Router();
-
-schemaRouter.post("/:entity", (request: Request, response: Response) => {
+const schemaPost = (request: Request, response: Response) => {
 
     const entityName = request.params.entity;
     const environmentId = request.body.environmentId;
     const schemaDefinition = request.body.definition;
 
-    Schema.find({ name: entityName }, (err: any, queryResult: ISchemaModel[]) => {
+    Schema.find({ name: entityName }, (err: any, queryResult: ISchema[]) => {
 
-        let schema = !!queryResult.length
+        const schema = !!queryResult.length
             ? new Schema(queryResult[0])
             : new Schema({ name: entityName, environmentId });
 
@@ -34,6 +31,6 @@ schemaRouter.post("/:entity", (request: Request, response: Response) => {
         });
     });
 
-});
+};
 
-export { schemaRouter };
+export { schemaPost };

@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 
 import { JwtHelper } from 'angular2-jwt';
 import { BrowserStorage } from '../../store/browserStorage';
-import { IUserModel } from '../../../../server/core/user';
+import { IUser } from '../../../../server/core/user';
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -27,7 +27,7 @@ import { IUserModel } from '../../../../server/core/user';
 @Injectable()
 export class Security {
 
-  private _user: IUserModel;
+  private _user: IUser;
   private _tokenName = 'auth.token';
   private _browserStorage: BrowserStorage;
 
@@ -63,7 +63,7 @@ export class Security {
     }
   }
 
-  public getUser(): IUserModel {
+  public getUser(): IUser {
     if (this._user == null) {
       this.refreshUser();
     }

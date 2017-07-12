@@ -1,41 +1,66 @@
-import { Document, model, Schema } from "mongoose";
-import { getModel } from "./infrastructure/mongoose.helper";
+import { createDiffieHellman } from "crypto";
+import { Document, Model, model, Schema } from "mongoose";
+import { EnvironmentSchema } from "./schema/index";
+
+export interface IEnvironmentDocument extends IEnvironment, Document {
+}
+
+export interface IEnvironmentModel extends Model<IEnvironmentDocument> {
+    createInstance(name: string, projectId: string);
+}
 
 export interface IEnvironment {
-    name: string; /* production, staging, development */
+    name: string;
     key: string;
     secret: string;
     projectId: string;
     tokenExpiresIn: string;
+    allowOrigin: string[];
+    addOrigin(domain: string): void;
 }
 
-export interface IEnvironmentModel extends IEnvironment, Document {
-}
+export class EnvironmentClass implements IEnvironment {
 
-export const EnvironmentSchema = new Schema({
-    name: {
-        required: true,
-        type: String,
-    },
-    key: {
-        required: true,
-        type: String,
-    },
-    secret: {
-        required: true,
-        type: String,
-    },
-    projectId: {
-        required: true,
-        type: Schema.Types.ObjectId,
-        ref: "sys_projects",
-    },
-    tokenExpiresIn: {
-        required: true,
-        type: String,
+    public name: string;
+    public key: string;
+    public secret: string;
+    public projectId: string;
+    public tokenExpiresIn: string;
+    public allowOrigin: string[];
+
+    public static createInstance(name: string, projectId: string): IEnvironment {
+        const securityToken = this.createKeySecret();
+        const env = new Environment({
+            name,
+            key: securityToken.key,
+            secret: securityToken.secret,
+            projectId,
+            tokenExpiresIn: "1d",
+            allowOrigin: [],
+        });
+
+        env.addOrigin("*");
+
+        return env;
     }
-});
 
-const Environment = getModel<IEnvironmentModel>("sys_environments", EnvironmentSchema);
+    private static createKeySecret = (): any => {
+        const diffHell = createDiffieHellman(256);
+        diffHell.generateKeys("base64");
+        const key = diffHell.getPublicKey("base64");
+        const secret = diffHell.getPrivateKey("base64");
+        return { key, secret };
+    }
 
-export default Environment;
+    public addOrigin(domain: string): void {
+        if (this.allowOrigin.indexOf(domain) !== -1) {
+            return;
+        }
+
+        this.allowOrigin.push(domain);
+    }
+}
+
+EnvironmentSchema.loadClass(EnvironmentClass);
+
+export const Environment = <IEnvironmentModel>model("Environment", EnvironmentSchema, "sys_environments");
