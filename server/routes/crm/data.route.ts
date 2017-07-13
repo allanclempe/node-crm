@@ -18,11 +18,11 @@ const dataGet = (request: Request, response: Response) => {
             return response.status(400).json({ message: `Definition for '${entityName}' not found` });
         }
 
+        cleanupModel(entityName);
+
         const mongooseSchema = new mongoose.Schema(schema.definition);
         const entityModel = mongoose.model(entityName, mongooseSchema);
         entityModel.find((error, result) => {
-
-            cleanupModel(entityName);
 
             if (!!error) {
                 response.status(400).json(error);
@@ -51,14 +51,14 @@ const dataPost = (request: Request, response: Response) => {
             return response.status(400).json({ message: `Definition for '${entityName}' not found` });
         }
 
+        cleanupModel(entityName);
+
         const mongooseSchema = new mongoose.Schema(schema.definition);
         mongooseSchema.plugin(idValidator);
         const entityModel = mongoose.model(entityName, mongooseSchema);
         const entity = new entityModel(data);
 
         entity.save((error, result) => {
-
-            cleanupModel(entityName);
 
             if (!!error) {
                 return response.status(400).json(error);
@@ -86,13 +86,13 @@ const dataPut = (request: Request, response: Response) => {
             return response.status(400).json({ message: `Definition for '${entityName}' not found` });
         }
 
+        cleanupModel(entityName);
+
         const mongooseSchema = new mongoose.Schema(schema.definition);
         mongooseSchema.plugin(idValidator);
         const entityModel = mongoose.model(entityName, mongooseSchema);
 
-        entityModel.findByIdAndUpdate(id, data, { new: true }, (error, result) => {
-
-            cleanupModel(entityName);
+        entityModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }, (error, result) => {
 
             if (!!error) {
                 return response.status(400).json(error);

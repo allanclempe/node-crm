@@ -4,7 +4,7 @@ import * as idValidator from "mongoose-id-validator";
 const UserSchema = new Schema({
     firstName: {
         required: true,
-        type: String,
+        type: String
     },
     lastName: {
         required: true,
@@ -19,13 +19,14 @@ const UserSchema = new Schema({
         type: String,
     },
     permissions: {
-        environmentIds: [{
-            type: Schema.Types.ObjectId,
+        environmentIds: {
+            type: [Schema.Types.ObjectId],
             ref: "Environment"
-        }],
+        },
         god: Boolean,
     },
 });
 
 UserSchema.plugin(idValidator);
+
 export { UserSchema };

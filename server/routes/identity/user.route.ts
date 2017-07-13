@@ -25,7 +25,7 @@ export const userPut = (request: Request, response: Response) => {
     const userRequest = request.body;
     delete request.body.password;
 
-    User.findByIdAndUpdate(id, userRequest, { new: true }, (error, user) => {
+    User.findByIdAndUpdate(id, userRequest, { new: true, runValidators: true }, (error, user) => {
 
         if (!!error) {
             return response.status(400).json(error);
