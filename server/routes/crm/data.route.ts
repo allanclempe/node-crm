@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import * as mongoose from "mongoose";
-import { cleanupModel } from "../../core/infrastructure/mongoose.helper";
 import { ISchemaDocument } from "../../core";
 import { SchemaSchema } from "../../core/schema/schema.schema";
 import * as idValidator from "mongoose-id-validator";

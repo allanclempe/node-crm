@@ -6,7 +6,6 @@ import * as mongoose from "mongoose";
 const schemaPost = (request: Request, response: Response) => {
 
     const entityName = request.params.entity;
-    const environmentId = request.body.environmentId;
     const schemaDefinition = request.body.definition;
     const conn: mongoose.Connection = response.locals.conn;
 
@@ -15,13 +14,12 @@ const schemaPost = (request: Request, response: Response) => {
         const schemaModel = <ISchemaModel>conn.model("Schema");
         const schema = !!queryResult.length
             ? new schemaModel(queryResult[0])
-            : new schemaModel({ name: entityName, environmentId });
+            : new schemaModel({ name: entityName });
 
         const schemaValidator = schema.validateDefinition(schemaDefinition);
 
         if (!schemaValidator.valid) {
-            response.status(400).json({ message: schemaValidator.error });
-            return;
+            return response.status(400).json({ message: schemaValidator.error });
         }
 
         schema.definition = schemaDefinition;

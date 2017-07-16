@@ -8,7 +8,10 @@ import { CryptoHelper } from "../../core/infrastructure/crypto.helper";
 export const userPost = (request: Request, response: Response) => {
     const model: IUser = request.body;
     const cfg = parameters();
-    const user = new User(request.body);
+    const user = User.createInstance(request.body.firstName, request.body.lastName, request.body.email);
+
+    user.setPassword(request.body.password, cfg.identity.secret);
+    user.setAsGod();
 
     user.save((error, result) => {
         if (!!error) {
@@ -51,11 +54,9 @@ export const userLogin = (request: Request, response: Response) => {
             return response.status(400).json(userError);
         }
 
-        const passwordHash = CryptoHelper.calculateHash(password, cfg.identity.secret);
-
-        if (!user || user.password !== passwordHash) {
-            return response.status(401).json({ error: "Unathorized" });
-        }
+        if (!user || !user.verifyPassword(password, cfg.identity.secret)) {
+                return response.status(401).json({ error: "Unathorized" });
+            }
 
         const payload = {
             id: user.id,
@@ -95,13 +96,11 @@ export const userLoginCrm = (request: Request, response: Response) => {
                 return response.status(400).json(userError);
             }
 
-            const passwordHash = CryptoHelper.calculateHash(password, cfg.identity.secret);
-
-            if (!user || user.password !== passwordHash) {
+            if (!user || !user.verifyPassword(password, cfg.identity.secret)) {
                 return response.status(401).json({ error: "Unathorized" });
             }
 
-            if (user.permissions.environmentIds.filter((id) => id.toString() === env.id).length === 0) {
+            if (!user.hasPermission(env.id)) {
                 return response.status(401).json({
                     error: `User do not have permissions for '${env.name}' environment`,
                 });
@@ -116,7 +115,6 @@ export const userLoginCrm = (request: Request, response: Response) => {
                 projectId: env.projectId,
                 allowOrigin: env.allowOrigin,
             };
-
 
             const token = sign(payload, cfg.identity.secret, {
                 expiresIn: env.tokenExpiresIn,
