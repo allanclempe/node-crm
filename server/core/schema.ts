@@ -28,4 +28,4 @@ export class SchemaClass implements ISchema {
 
 SchemaSchema.loadClass(SchemaClass);
 
-export const Schema = <ISchemaModel>model("Schema", SchemaSchema, "sys_schemas");
+//export const Schema = <ISchemaModel>model("Schema", SchemaSchema, "sys_schemas");

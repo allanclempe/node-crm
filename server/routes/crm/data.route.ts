@@ -1,38 +1,31 @@
 import { Request, Response, Router } from "express";
 import * as mongoose from "mongoose";
 import { cleanupModel } from "../../core/infrastructure/mongoose.helper";
-import { Schema, ISchemaDocument } from "../../core";
+import { ISchemaDocument } from "../../core";
+import { SchemaSchema } from "../../core/schema/schema.schema";
 import * as idValidator from "mongoose-id-validator";
 
 const dataGet = (request: Request, response: Response) => {
-
     const entityName = request.params.entity;
+    const conn: mongoose.Connection = response.locals.conn;
+    const models = conn.modelNames();
 
-    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaDocument) => {
+    if (models.indexOf(entityName) === -1) {
+        return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+    }
 
-        if (!!err) {
-            return response.status(400).json(err);
+    const entityModel = conn.model(entityName);
+
+    entityModel.find((error, result) => {
+
+        if (!!error) {
+            response.status(400).json(error);
+            return;
         }
 
-        if (schema == null) {
-            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
-        }
-
-        cleanupModel(entityName);
-
-        const mongooseSchema = new mongoose.Schema(schema.definition);
-        const entityModel = mongoose.model(entityName, mongooseSchema);
-        entityModel.find((error, result) => {
-
-            if (!!error) {
-                response.status(400).json(error);
-                return;
-            }
-
-            response.status(200).json(result);
-        });
-
+        response.status(200).json(result);
     });
+
 
 };
 
@@ -40,35 +33,24 @@ const dataPost = (request: Request, response: Response) => {
 
     const entityName = request.params.entity;
     const data = request.body;
+    const conn: mongoose.Connection = response.locals.conn;
+    const models = conn.modelNames();
 
-    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaDocument) => {
+    if (models.indexOf(entityName) === -1) {
+        return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+    }
 
-        if (!!err) {
-            return response.status(400).json(err);
+    const entityModel = conn.model(entityName);
+    const entity = new entityModel(data);
+
+    entity.save((error, result) => {
+
+        if (!!error) {
+            return response.status(400).json(error);
         }
 
-        if (schema == null) {
-            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
-        }
-
-        cleanupModel(entityName);
-
-        const mongooseSchema = new mongoose.Schema(schema.definition);
-        mongooseSchema.plugin(idValidator);
-        const entityModel = mongoose.model(entityName, mongooseSchema);
-        const entity = new entityModel(data);
-
-        entity.save((error, result) => {
-
-            if (!!error) {
-                return response.status(400).json(error);
-            }
-
-            return response.status(200).json(result);
-        });
-
+        return response.status(200).json(result);
     });
-
 };
 
 const dataPut = (request: Request, response: Response) => {
@@ -76,35 +58,28 @@ const dataPut = (request: Request, response: Response) => {
     const entityName = request.params.entity;
     const id = request.params.id;
     const data = request.body;
+    const conn: mongoose.Connection = response.locals.conn;
+    const models = conn.modelNames();
 
-    Schema.findOne({ name: entityName }, (err: any, schema: ISchemaDocument) => {
-        if (!!err) {
-            return response.status(400).json(err);
+    if (models.indexOf(entityName) === -1) {
+        return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+    }
+
+    const entityModel = conn.model(entityName);
+
+    entityModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }, (error, result) => {
+
+        if (!!error) {
+            return response.status(400).json(error);
         }
 
-        if (schema == null) {
-            return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+        if (!result) {
+            return response.status(400).json({ error: `Entry id '${id}' not found for '${entityName}'"` });
         }
 
-        cleanupModel(entityName);
-
-        const mongooseSchema = new mongoose.Schema(schema.definition);
-        mongooseSchema.plugin(idValidator);
-        const entityModel = mongoose.model(entityName, mongooseSchema);
-
-        entityModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }, (error, result) => {
-
-            if (!!error) {
-                return response.status(400).json(error);
-            }
-
-            if (!result) {
-                return response.status(400).json({ error: `Entry id '${id}' not found for '${entityName}'"` });
-            }
-
-            return response.status(200).json(result);
-        });
+        return response.status(200).json(result);
     });
+
 
 };
 

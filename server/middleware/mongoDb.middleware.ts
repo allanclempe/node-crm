@@ -15,7 +15,19 @@ export const mongoDbConnection = (dbName: string, useEnvironment: boolean) => {
 
         const openConnection = (host: string, name: string, debug: boolean) => {
             mongoose.set("debug", debug);
-            response.on("finish", () => mongoose.connection.close());
+            response.on("finish", () => {
+                mongoose.connection.close();
+                if (!!response.locals.conn) {
+                    response.locals.conn.close();
+                }
+            });
+
+            if (useEnvironment) {
+                const conn = mongoose.createConnection(`mongodb://${host}/${name}`);
+                response.locals.conn = conn;
+                next();
+                return;
+            }
 
             mongoose.connect(`mongodb://${host}/${name}`, {
                 // useMongoClient: true  @types/mongoose is not up to date.
@@ -39,13 +51,13 @@ export const mongoDbConnection = (dbName: string, useEnvironment: boolean) => {
         if (useEnvironment) {
             verify(token, cfg.identity.secret, (tokenError, decodedToken) => {
                 if (!!tokenError) {
-                    return response.status(403).json({ message: "Unauthorized, Invalid token"});
+                    return response.status(403).json({ message: "Unauthorized, Invalid token" });
                 }
                 console.log(decodedToken);
 
                 openConnection(cfg.mongoDb.host,
-                            `${name}-${decodedToken.projectId}-${decodedToken.env}`,
-                            cfg.mongoDb.debug);
+                    `${name}-${decodedToken.projectId}-${decodedToken.env}`,
+                    cfg.mongoDb.debug);
             });
             return;
         }

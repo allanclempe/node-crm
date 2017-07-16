@@ -1,17 +1,21 @@
 import { Request, Response, Router } from "express";
-import { Schema, ISchema } from "../../core";
+import { ISchema, ISchemaModel } from "../../core";
+import { SchemaSchema } from "../../core/schema/schema.schema";
+import * as mongoose from "mongoose";
 
 const schemaPost = (request: Request, response: Response) => {
 
     const entityName = request.params.entity;
     const environmentId = request.body.environmentId;
     const schemaDefinition = request.body.definition;
+    const conn: mongoose.Connection = response.locals.conn;
 
-    Schema.find({ name: entityName }, (err: any, queryResult: ISchema[]) => {
+    conn.model("Schema", SchemaSchema, "sys_schemas").find({ name: entityName }, (err: any, queryResult: ISchema[]) => {
 
+        const schemaModel = <ISchemaModel>conn.model("Schema");
         const schema = !!queryResult.length
-            ? new Schema(queryResult[0])
-            : new Schema({ name: entityName, environmentId });
+            ? new schemaModel(queryResult[0])
+            : new schemaModel({ name: entityName, environmentId });
 
         const schemaValidator = schema.validateDefinition(schemaDefinition);
 
