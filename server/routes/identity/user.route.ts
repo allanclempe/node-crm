@@ -81,7 +81,7 @@ export const userLoginCrm = (request: Request, response: Response) => {
     const key = request.body.public_key;
     const cfg = parameters();
 
-    Environment.findOne({ key }, (envError, env) => {
+    Environment.findOne({ key }).populate("project").exec((envError, env) => {
 
         if (!!envError) {
             return response.status(400).json(envError);
@@ -112,7 +112,7 @@ export const userLoginCrm = (request: Request, response: Response) => {
                 lastName: user.lastName,
                 email: user.email,
                 env: env.name,
-                projectId: env.projectId,
+                projectId: env.project,
                 allowOrigin: env.allowOrigin,
             };
 

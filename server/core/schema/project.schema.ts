@@ -6,13 +6,18 @@ const ProjectSchema = new Schema({
         required: true,
         type: String,
     },
-    userId: {
+    user: {
         required: true,
         type: Schema.Types.ObjectId,
         ref: "User"
     },
+    environments: [{
+        type: Schema.Types.ObjectId,
+        ref: "Environment",
+    }]
 });
 
-ProjectSchema.plugin(idValidator);
+// do not turn on the plugins.
+// ProjectSchema.plugin(idValidator);
 
 export { ProjectSchema };

@@ -35,4 +35,25 @@ const schemaPost = (request: Request, response: Response) => {
 
 };
 
-export { schemaPost };
+const schemaSingle = (request: Request, response: Response) => {
+
+    const id = request.params.id;
+    const conn: mongoose.Connection = response.locals.conn;
+
+    conn.model("Schema", SchemaSchema, "sys_schemas").findById(id, (err: any, schemas: ISchema[]) => {
+        return response.status(200).json(schemas);
+    });
+
+};
+
+const schemaGet = (request: Request, response: Response) => {
+
+    const conn: mongoose.Connection = response.locals.conn;
+
+    conn.model("Schema", SchemaSchema, "sys_schemas").find({}, (err: any, schemas: ISchema[]) => {
+        return response.status(200).json(schemas);
+    });
+
+};
+
+export { schemaPost, schemaGet, schemaSingle };

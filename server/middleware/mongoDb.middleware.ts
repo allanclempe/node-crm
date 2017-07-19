@@ -51,10 +51,9 @@ export const mongoDbConnection = (dbName: string, useEnvironment: boolean) => {
         if (useEnvironment) {
             verify(token, cfg.identity.secret, (tokenError, decodedToken) => {
                 if (!!tokenError) {
-                    return response.status(403).json({ message: "Unauthorized, Invalid token" });
+                    return response.status(401).json({ message: "Unauthorized, Invalid token" });
                 }
-                console.log(decodedToken);
-
+                
                 openConnection(cfg.mongoDb.host,
                     `${name}-${decodedToken.projectId}-${decodedToken.env}`,
                     cfg.mongoDb.debug);

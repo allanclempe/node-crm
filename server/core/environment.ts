@@ -1,6 +1,7 @@
 import { createDiffieHellman } from "crypto";
 import { Document, Model, model, Schema } from "mongoose";
 import { EnvironmentSchema } from "./schema/index";
+import { IProjectDocument } from "./";
 
 export interface IEnvironmentDocument extends IEnvironment, Document {
 }
@@ -13,7 +14,7 @@ export interface IEnvironment {
     name: string;
     key: string;
     secret: string;
-    projectId: string;
+    project: IProjectDocument | string;
     tokenExpiresIn: string;
     allowOrigin: string[];
     addOrigin(domain: string): void;
@@ -24,17 +25,17 @@ export class EnvironmentClass implements IEnvironment {
     public name: string;
     public key: string;
     public secret: string;
-    public projectId: string;
+    public project: IProjectDocument | string;
     public tokenExpiresIn: string;
     public allowOrigin: string[];
 
-    public static createInstance(name: string, projectId: string): IEnvironment {
+    public static createInstance(name: string, project: IProjectDocument): IEnvironment {
         const securityToken = this.createKeySecret();
         const env = new Environment({
             name,
             key: securityToken.key,
             secret: securityToken.secret,
-            projectId,
+            project,
             tokenExpiresIn: "1d",
             allowOrigin: [],
         });

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { userLogin, userPost, userPut, userLoginCrm } from "./user.route";
-import { projectPost, projectPut } from "./project.route";
-import { environmentGet, environmentLogin, environmentPost, environmentPut } from "./environment.route";
+import { projectPost, projectPut, projectGet, projectSingle } from "./project.route";
+import { environmentGet, environmentLogin, environmentPost, environmentPut, environmentSingle } from "./environment.route";
 import { mongoDbConnection } from "../../middleware/mongoDb.middleware";
 import { parameters } from "../../environment/environment";
 
@@ -24,6 +24,8 @@ const projectRouter = (): Router => {
 
   router.use(mongoDbConnection(cfg.mongoDb.name, false));
   router.post("/", projectPost);
+  router.get("/", projectGet);
+  router.get("/:id", projectSingle);
   router.put("/:id", projectPut);
 
   return router;
@@ -35,6 +37,7 @@ const environmentRouter = (): Router => {
 
   router.use(mongoDbConnection(cfg.mongoDb.name, false));
   router.get("/", environmentGet);
+  router.get("/:id", environmentSingle);
   router.post("/login", environmentLogin);
   router.post("/", environmentPost);
   router.put("/:id", environmentPut);

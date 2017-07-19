@@ -1,12 +1,12 @@
 import { Request, Response, Router } from "express";
 import { sign } from "jsonwebtoken";
 
-import { Environment, IEnvironment } from "../../core";
+import { Environment, IEnvironment, Project } from "../../core";
 import { parameters } from "../../environment/environment";
 
 export const environmentGet = (request: Request, response: Response) => {
 
-    Environment.find({}, (error, envs) => {
+    Environment.find({}).exec((error, envs) => {
         if (!!error) {
             return response.status(400).json(error);
         }
@@ -14,6 +14,20 @@ export const environmentGet = (request: Request, response: Response) => {
     });
 
 };
+
+export const environmentSingle = (request: Request, response: Response) => {
+    const id = request.params.id;
+
+    Environment.findById(id).populate("project", "_id name").exec((error, env) => {
+        if (!!error) {
+            return response.status(400).json(error);
+        }
+        return response.status(200).json(env);
+    });
+
+};
+
+
 
 export const environmentLogin = (request: Request, response: Response) => {
 
@@ -25,7 +39,7 @@ export const environmentLogin = (request: Request, response: Response) => {
         if (env == null) {
             return response.status(401).json({ error: "Unauthorized" });
         }
-        const payload = { env: env.name, projectId: env.projectId, allowOrigin: env.allowOrigin };
+        const payload = { env: env.name, projectId: env.project, allowOrigin: env.allowOrigin };
         const token = sign(payload, cfg.identity.secret, {
             expiresIn: env.tokenExpiresIn,
         });
@@ -50,7 +64,7 @@ export const environmentPost = (request: Request, response: Response) => {
     });
 };
 
-export const environmentPut =  (request: Request, response: Response) => {
+export const environmentPut = (request: Request, response: Response) => {
 
     const id = request.params.id;
     const model = request.body;

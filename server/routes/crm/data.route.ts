@@ -83,4 +83,28 @@ const dataPut = (request: Request, response: Response) => {
 };
 
 
-export { dataGet, dataPost, dataPut };
+const dataStats = (request: Request, response: Response) => {
+
+    const entityName = request.params.entity;
+    const conn: mongoose.Connection = response.locals.conn;
+    const models = conn.modelNames();
+
+    if (models.indexOf(entityName) === -1) {
+        return response.status(400).json({ message: `Definition for '${entityName}' not found` });
+    }
+
+    const entityModel = conn.model(entityName);
+
+    entityModel.collection.stats((error, stats) => {
+        if (!!error) {
+            return response.status(400).json(error);
+        }
+        return response.status(200).json(stats);
+    });
+
+};
+
+
+
+
+export { dataGet, dataPost, dataPut, dataStats };

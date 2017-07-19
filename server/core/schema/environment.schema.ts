@@ -13,10 +13,10 @@ export const EnvironmentSchema = new Schema({
         required: true,
         type: String,
     },
-    projectId: {
+    project: {
         required: true,
         type: Schema.Types.ObjectId,
-        ref: "sys_projects",
+        ref: "Project",
     },
     tokenExpiresIn: {
         required: true,
